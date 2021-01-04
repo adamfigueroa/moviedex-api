@@ -78,6 +78,8 @@ app.get("/movie", (req, res) => {
   res.json(movies);
 });
 
-app.listen(8000, () => {
+const port = 8000
+
+app.listen(port, () => {
   console.log("Express server is listening on port 8000!");
 });
