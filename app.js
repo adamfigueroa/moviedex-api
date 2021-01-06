@@ -8,7 +8,8 @@ const movieList = require("./movieList");
 
 const app = express();
 
-app.use(morgan("dev"));
+const morganSetting = process.env.NODE_ENV === "production" ? "tiny" : "common";
+app.use(morgan(morganSetting));
 app.use(helmet());
 app.use(cors());
 
@@ -31,7 +32,6 @@ app.get("/movie", (req, res) => {
   let filteredGenreTypes = unfilteredGenreTypes.filter((c, index) => {
     return unfilteredGenreTypes.indexOf(c) === index;
   });
-  console.log(filteredGenreTypes);
 
   let { genre, country, avg_vote } = req.query;
 
@@ -78,8 +78,18 @@ app.get("/movie", (req, res) => {
   res.json(movies);
 });
 
-const port = 8000
+app.use((error, req, res, next) => {
+  let response
+  if (process.env.NODE_ENV === 'production') {
+    response = { error: { message: 'server error' }}
+  } else {
+    response = { error }
+  }
+  res.status(500).json(response)
+})
+
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
-  console.log("Express server is listening on port 8000!");
+  console.log("Express server is live");
 });
